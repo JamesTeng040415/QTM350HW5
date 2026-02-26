@@ -1,0 +1,78 @@
+---
+title: "WDI 2022: Income, Health, and Unemployment"
+author: "James Teng"
+date: today
+format:
+  revealjs:
+    theme: [simple, custom.scss]
+    transition: slide
+    slide-number: true
+execute:
+  echo: false
+  warning: false
+  message: false
+bibliography: references.bib
+---
+
+## Overview
+
+We use 2022 World Development Indicators (WDI) data [@worldbank_wdi] and focus on:
+
+- GDP per capita
+- Life expectancy
+- Unemployment rate
+
+---
+
+## GDP per capita distribution
+
+```{python}
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+
+df = pd.read_csv("wdi.csv")
+
+plt.figure()
+plt.hist(df["gdp_per_capita"].dropna(), bins=30)
+plt.title("Distribution of GDP per Capita (2022)")
+plt.xlabel("GDP per Capita (US$)")
+plt.ylabel("Number of Countries")
+plt.show()
+```
+
+Income and life expectancy
+```{python}
+tmp = df[["gdp_per_capita", "life_expectancy"]].dropna()
+
+plt.figure()
+plt.scatter(np.log10(tmp["gdp_per_capita"]), tmp["life_expectancy"])
+plt.title("Life Expectancy vs Log10 GDP per Capita (2022)")
+plt.xlabel("Log10 GDP per Capita")
+plt.ylabel("Life Expectancy (Years)")
+plt.show()
+```
+
+This pattern is consistent with the Preston curve idea [@preston1975].
+
+Top unemployment rates
+```{python}
+u = df[["country", "unemployment_rate"]].dropna().sort_values("unemployment_rate", ascending=False)
+top_u = u.head(10)
+
+plt.figure()
+plt.bar(top_u["country"], top_u["unemployment_rate"])
+plt.title("Top 10 Unemployment Rates (2022)")
+plt.xlabel("Country")
+plt.ylabel("Unemployment Rate (%)")
+plt.xticks(rotation=60, ha="right")
+plt.tight_layout()
+plt.show()
+```
+
+Takeaways
+GDP per capita is highly skewed
+Higher income is associated with higher life expectancy
+Unemployment varies substantially across countries
+
+## References
